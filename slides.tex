@@ -1,0 +1,186 @@
+\documentclass{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+% \usepackage{beamerthemesplit} // Activate for custom appearance
+
+\title{Why bats are cool}
+\author{Batman}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+%\section[Outline]{}
+%\frame{\tableofcontents}
+%
+%\section{Introduction}
+%\subsection{Overview of the Beamer Class}
+%\frame
+%{
+%  \frametitle{Features of the Beamer Class}
+%
+%  \begin{itemize}
+%  \item<1-> Normal LaTeX class.
+%  \item<2-> Easy overlays.
+%  \item<3-> No external programs needed.      
+%  \end{itemize}
+%}
+
+\frame
+{
+\frametitle{Motivating \emph{toy} example}
+\begin{figure}[htb]
+\includegraphics[width=0.8\textwidth]{tt_fig1.jpg}
+\end{figure}
+}
+\frame
+{
+\frametitle{Motivating \emph{toy} example}
+\begin{figure}[htb]
+\includegraphics[trim=70 0 10 0cm, clip, width=1.0\textwidth]{tt_fig2.jpg}
+\end{figure}
+The state of the train is specified by its position and velocity.
+This state evolves stochastically and our observations of it are noisy.
+}
+\frame
+{
+\frametitle{Motivating \emph{toy} example}
+\begin{figure}[htb]
+\includegraphics[trim=40 0 40 0cm, clip, width=1.0\textwidth]{tt_fig3.jpg}
+\end{figure}
+Based on the previous estimate predict the position (and velocity) of the train, as shown in red, {\color{red} $p(x_t|D_{t-1})$}. 
+A noisy measurement, {\color{blue} $z_t$}, gives a likelihood for the position, as shown in blue, {\color{blue} $p(z_t|x_t)$}.
+}
+\frame
+{
+\frametitle{Motivating \emph{toy} example}
+\begin{figure}[htb]
+\includegraphics[trim=40 0 10 0cm, clip, width=1.0\textwidth]{tt_fig4.jpg}
+\end{figure}
+Use Bayes' rule to compute the posterior distribution of the train's position (green {\color[rgb]{0,0.3,0} $p(x_t|D_t)\propto p(z_t|x_t)p(x_t|D_{t-1})$}).
+}
+
+\frame
+{
+\frametitle{Problem statement}
+Consider a Markovian process $x_t$ for $t=1,2,\dots$ where at each time step we make a noisy observation $y_t$.\newline\newline From the observations $y_t$ we want to estimate both the state $x_t$ and the parameters of the model $\theta$.
+}
+
+\frame
+{
+\frametitle{Optimal solutions}
+Some solutions have been found but they have limited applicability. The Kalman filter\newline\newline Extensions to these methods have been pursued and enjoy widespread use.\newline\newline E.g. Extended Kalman filter, and Unscented Kalman filter\newline\newline Today I will talk about simulation about particle filters, a simulation based approach to this problem.
+}
+
+\frame
+{
+\begin{figure}[htb]
+\includegraphics[width=0.8\textwidth]{vn.jpg}
+\end{figure}
+``\#Computers$>$Integrals"$\sim$ von Neumann (probably)
+}
+
+\frame
+{
+\frametitle{(Bayesian) Importance Sampling}
+Why do I even care what these words mean?\newline\newline Maths has provided a \textsc{pdf} $f(x)$ you desperately want to sample.\newline\newline But $f(x) = K\pi(x)$ where $K$ is some unpleasant normalisation constant.
+}
+
+\frame
+{
+\frametitle{(Bayesian) Importance Sampling}
+Those words you didn't care about refer to a way of making a discrete approximation to $f$.\newline\newline Now we all care! Cool
+}
+
+\frame
+{
+\frametitle{(Bayesian) Importance Sampling}
+\textbf{Idea:} Make a find a discrete random variable which has a distribution similar to $F$.
+}
+
+
+\frame
+{
+\frametitle{(Bayesian) Importance Sampling}
+\textbf{Method:} Take a sample $\{x^i\}$ from a friendly density $q(x)$. The sample will form the support. If a mass of $n^{-1}$ was given to each support point this would approximate $Q$. If we give point $x^i$ the mass $w^i$ where
+\begin{equation}
+w^i\propto \frac{\pi(x^i)}{q(x^i)}.
+\end{equation}
+Then it approximates $F$.
+}
+
+\frame
+{
+\frametitle{(Bayesian) Importance Sampling}
+\textbf{Why it's cool:} At no point did we need $K$.\newline\newline Now we have a the \textsc{pmf} of a discrete random variable which approximates $f$.\newline\newline Unlike acceptance-rejection there are no wasted samples (maybe just some with low weight).
+}
+
+\frame
+{
+\frametitle{(Bayesian) Importance Sampling}
+``Motivation" for why such an approximation converges in distribution.
+\begin{equation}
+\begin{aligned}
+%\int \mathbb{I}_{s\leq x}f(s)ds 
+F(x)&= \int\left( \mathbb{I}_{s\leq x}\frac{f(s)}{q(s)}\right)q(s)ds\\
+&\approx \frac{1}{n}\sum_{i=1}^n  \mathbb{I}_{x_i\leq x}\frac{f(x_i)}{q(x_i)}\\
+&= \sum_{x_i\leq x}\frac{f(x_i)}{nq(x_i)}\\
+\end{aligned}
+\end{equation}
+where the $x_i$ are drawn from $q$. So let the $x_i$ be the support points and $f(x_i)/n q(x_i)$ their weights.
+}
+
+\frame
+{
+\frametitle{Why have you wasted my time with IS?}
+Because we want to approximate $p(x_{0:k}|y_{1:k})$ and (fiddly) but
+\begin{equation}
+p(x_{0:k}|y_{1:k})\propto \underbrace{p(y_t|x_t)}_{\text{observation model}}\times\underbrace{p(x_k|x_{t-1})}_{\text{state model}}\times\underbrace{p(x_{0:k-1}|y_{1:k-1})}_{\text{known}}.
+\end{equation}
+Sampling from $p(x_0)$ allows us to sample from all later densities.
+}
+
+\frame
+{
+\frametitle{Application to SIR model}
+Apply this methodology to a toy problem.\newline\newline $SIR$ is a deterministic epidemiological model
+\begin{equation}
+\begin{aligned}
+\dot{S} &= -\beta IS\\
+\dot{I} &= \beta SI - \gamma I\\
+\dot{R} &= \gamma I
+\end{aligned}
+\end{equation}
+}
+
+\frame
+{
+\frametitle{Application to SIR model}
+Using a finite difference approximation (backward Euler) this becomes a difference equation.\newline\newline At each time step some noise to the system to create a discrete time MC.\newline\newline The observation process involves taking noisy measurements of the number of sick people (not realistic)
+}
+
+\frame
+{
+\begin{figure}[htb]
+\includegraphics[width=0.8\textwidth]{fig1.png}
+\end{figure}
+}
+
+\frame
+{
+\begin{figure}[htb]
+\includegraphics[width=0.8\textwidth]{fig4.png}
+\end{figure}
+}
+
+\frame
+{
+\begin{figure}[htb]
+\includegraphics[width=0.8\textwidth]{fig5.png}
+\end{figure}
+}
+\end{document}
