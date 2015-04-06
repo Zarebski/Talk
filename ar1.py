@@ -44,7 +44,7 @@ def PF(X,N):
 		PFstep
 		PFstats
 	"""
-	H = np.array([[0],[0]]) 	# initial condition is fixed at 0
+	H = np.array([[0],[1./12]]) 	# initial condition is fixed at 0
 	M = PFinitialmeasure(N)
 	for i in range(1,len(X)):
 		x = X[i-1]				# previous state
