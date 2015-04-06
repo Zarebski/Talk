@@ -62,18 +62,27 @@ A noisy measurement, {\color{blue} $z_t$}, gives a likelihood for the position, 
 \includegraphics[trim=40 0 10 0cm, clip, width=1.0\textwidth]{tt_fig4.jpg}
 \end{figure}
 Use Bayes' rule to compute the posterior distribution of the train's position (green {\color[rgb]{0,0.3,0} $p(x_t|D_t)\propto p(z_t|x_t)p(x_t|D_{t-1})$}).
+\newline\newline Special case of linear model  Gaussian errors
 }
 
 \frame
 {
-\frametitle{Problem statement}
-Consider a Markovian process $x_t$ for $t=1,2,\dots$ where at each time step we make a noisy observation $y_t$.\newline\newline From the observations $y_t$ we want to estimate both the state $x_t$ and the parameters of the model $\theta$.
+\frametitle{General problem statement}
+{\bf System model:} a process ${\bf x}_t$ for $t=1,2,\dots$ evolving by 
+\begin{equation*}
+{\bf x}_t = f_t({\bf x}_{t-1},{\bf v}_{t-1})  
+\end{equation*}
+where the ${\bf v}_t$ are iid process noise.\newline\newline {\bf Observation model:} for each $t$ a measurement, ${\bf y}_t$ is recorded. Measurements given by
+\begin{equation}
+{\bf y}_t = h_t({\bf x}_t ,{\bf n}_t).  
+\end{equation}
+Again the ${\bf n}_t$ are iid process noise. 
 }
 
 \frame
 {
 \frametitle{Optimal solutions}
-Some solutions have been found but they have limited applicability. The Kalman filter\newline\newline Extensions to these methods have been pursued and enjoy widespread use.\newline\newline E.g. Extended Kalman filter, and Unscented Kalman filter\newline\newline Today I will talk about simulation about particle filters, a simulation based approach to this problem.
+Some solutions have been found but they have limited applicability. The Kalman filter for continuous states and grid-based methods for a finite number of discrete states.\newline\newline Extensions to these methods have been pursued and enjoy widespread use.\newline\newline e.g. Extended Kalman filter, and Unscented Kalman filter\newline\newline Here we will look at simulation based methods (particle filters).
 }
 
 \frame
