@@ -5,6 +5,7 @@ this quantity"""
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats 
+import AZ
 
 def f(i,j,rho):
 	"""return the i,j th entry of the matrix"""
@@ -47,6 +48,7 @@ def PF(X,N):
 	H = np.array([[0],[1./12]]) 	# initial condition is fixed at 0
 	M = PFinitialmeasure(N)
 	for i in range(1,len(X)):
+		AZ.KDEplot(M,'fig'+str(i)+'.png')
 		x = X[i-1]				# previous state
 		z = X[i] 				# ith observation
 		M = PFstep(M,x,z)		# update the measure
