@@ -46,4 +46,4 @@ def EstEffNum(Measure):
 		Measure is an array with last row being the weights
 	"""
 	W = Measure[-1,:]
-	return 1/(np.sum(W**2))
+	return 1./(np.sum(W**2))
