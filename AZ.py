@@ -36,5 +36,14 @@ def KDEplot(Measure,Filename,NResample=None):
 	plt.plot(X,Y)
 	plt.savefig(Filename)
 
-
-
+def EstEffNum(Measure):
+	"""Takes a Measure in which the bottom row is the weights associated to the 
+	support points defined by the upper part of the array (so you can have 
+	support points in higher dimensions). it then returns an estimate of the 
+	effective number of particles as given in equation 51 of "A Tutorial on 
+	Rarticles Filters for Online Nonlinear/Non-Gaussian Bayesian Tracking"
+	Args:
+		Measure is an array with last row being the weights
+	"""
+	W = Measure[-1,:]
+	return 1./(np.sum(W**2))
