@@ -7,6 +7,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as ss 
 
+def Resample(Measure,NResample=None):
+	"""This is a function which returns a measure resampled NResample times
+	Args:
+		Measure is an array where each column describes a support point and the 
+			final entry is the weight attached to that point
+		NResample is the number of points to resample from the measure if this 
+			arguement is not supplied it defaults to the number of support 
+			points in the measure
+	"""
+	# define the number of points to resample from the measure
+	SupportSize = len(Measure[0,:])	# number of support points
+	if NResample == None:
+		Size = SupportSize
+	else:
+		Size = NResample
+
+	# resample Measure to get an iid sample of point indices
+	Indices = np.arange(SupportSize)	# array indices
+	Resample = np.random.choice(Indices, size=Size, p=Measure[-1,:])
+	# construct the new measure based on the indices just sampled
+	# Dimension = len(Measure[:,0]) - 1 # dimension of support points
+	Result = np.vstack(( Measure[0:-1,Resample], np.ones(Size)/Size ))
+	return Result
+
 def KDEplot(Measure,Filename,NResample=None):
 	"""This function takes a 2-by-N numpy array which encodes a random measure.
 	the first row is the support of of the measure and the second the weights 
